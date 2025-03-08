@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 
-
 /**
  * Controller
  */
@@ -65,10 +64,19 @@ public class Controller {
 		else
 			return new ResponseEntity<>(responseString, HttpStatus.OK);
 	}
+
 	@PostMapping("/addPeople")
-	public ResponseEntity<String> addPeople(@RequestBody People people)
-	{
+	public ResponseEntity<String> addPeople(@RequestBody People people) {
 		return new ResponseEntity<>(service.addPeople(people), HttpStatus.OK);
+	}
+
+	@GetMapping("/resetGame")
+	public ResponseEntity<String> resetGame(@RequestParam String playerName, @RequestParam String gameId) {
+		String resp = service.resetGame(playerName, gameId);
+		if (resp.contains("ERROR"))
+			return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(resp, HttpStatus.OK);
 	}
 
 }

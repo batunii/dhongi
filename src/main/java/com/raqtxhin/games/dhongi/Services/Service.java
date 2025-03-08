@@ -26,7 +26,7 @@ public class Service {
 	private PeopleRepo peopleRepo;
 
 	public String createGame(String playerName) {
-		String newGameId = UUID.randomUUID().toString();
+		String newGameId = UUID.randomUUID().toString().substring(0, 4);
 		ArrayList<Player> playerList = new ArrayList<>();
 		Player newPlayer = new Player(playerName, true, false);
 		playerList.add(newPlayer);
@@ -95,6 +95,19 @@ public class Service {
 	public String addPeople(People people) {
 		peopleRepo.insert(people);
 		return "Added";
+	}
+
+	public String resetGame(String playerName, String gameId) {
+		Optional<Game> currGame = gameRepo.findById(gameId);
+		assert !currGame.isEmpty();
+		ArrayList<Player> players = currGame.get().getPlayers();
+		String leaderName = players.stream()
+				.filter(p -> p.getIsLeader()).findFirst().get().getName();
+		if (!leaderName.equals(playerName))
+			return "ERROR 403 : Player not leader";
+		players.stream().forEach(p -> p.setIsDhongi(false));
+		gameRepo.save(currGame.get());
+		return "SUCCESS : RESET";
 	}
 
 }
